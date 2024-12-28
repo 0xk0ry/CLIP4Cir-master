@@ -10,7 +10,7 @@ import multiprocessing
 from pathlib import Path
 from spellchecker import SpellChecker
 import re
-from model import CIRPlus
+from models import CIRPlus
 from typing import List, Tuple
 from torch.utils.data import DataLoader
 from data_utils import squarepad_transform, targetpad_transform, WikiartDataset
