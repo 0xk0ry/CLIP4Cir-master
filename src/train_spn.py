@@ -62,8 +62,7 @@ def main():
         classic_val_dataset = CIRDataset(args.dataset, 'val', 'classic', preprocess, args.data_path,
                                          args.dress_types)
         if not args.wo_bank:
-            val_index_features, val_index_names = extract_index_features(classic_val_dataset, model,
-                                                                         device=device)
+            val_index_features, val_index_names = extract_index_features(classic_val_dataset, model.clip)
     elif args.dataset == 'fiq':
         for idx, dress_type in enumerate(args.dress_types):
             idx_to_dress_mapping[idx] = dress_type
@@ -73,8 +72,7 @@ def main():
                                              fiq_val_type=0)
             classic_val_datasets.append(classic_val_dataset)
             if not args.wo_bank:
-                index_features_and_names = extract_index_features(classic_val_dataset, model,
-                                                                  device=device)
+                index_features_and_names = extract_index_features(classic_val_dataset, model.clip)
                 index_features_list.append(index_features_and_names[0])
                 index_names_list.append(index_features_and_names[1])
     relative_train_dataset = CIRDataset(args.dataset, 'train', 'relative', preprocess, args.data_path,
@@ -140,9 +138,9 @@ def main():
         if epoch % args.validation_frequency == 0:
             if args.dataset == 'cirr':
                 if args.wo_bank:
-                    val_index_features, val_index_names = extract_index_features(classic_val_dataset, model)
-                results = compute_cirr_val_metrics(relative_val_dataset, model, val_index_features,
-                                                   val_index_names, device=device)
+                    val_index_features, val_index_names = extract_index_features(classic_val_dataset, model.clip)
+                results = compute_cirr_val_metrics(relative_val_dataset, model.clip, val_index_features,
+                                                   val_index_names)
                 group_recall_at1, group_recall_at2, group_recall_at3, recall_at1, recall_at5, recall_at10, recall_at50 = results
 
                 results_dict = {
@@ -171,11 +169,11 @@ def main():
                 for relative_val_dataset, classic_val_dataset, idx in zip(relative_val_datasets, classic_val_datasets,
                                                                           idx_to_dress_mapping):
                     if args.wo_bank:
-                        index_features, index_names = extract_index_features(classic_val_dataset, model)
+                        index_features, index_names = extract_index_features(classic_val_dataset, model.clip)
                     else:
                         index_features, index_names = index_features_list[idx], index_names_list[idx]
-                    recall_at10, recall_at50 = compute_fiq_val_metrics(relative_val_dataset, model,
-                                                                       index_features, index_names, device=device)
+                    recall_at10, recall_at50 = compute_fiq_val_metrics(relative_val_dataset, model.clip,
+                                                                       index_features, index_names)
                     recalls_at10.append(recall_at10)
                     recalls_at50.append(recall_at50)
 

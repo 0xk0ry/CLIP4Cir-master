@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
 import random
 
-base_path = Path(__file__).absolute().parents[1].absolute()
+base_path = Path("/kaggle/input")
 
 
 def _convert_image_to_rgb(image):
@@ -224,11 +224,11 @@ class CIRRDataset(Dataset):
             raise ValueError("mode should be in ['relative', 'classic']")
 
         # get triplets made by (reference_image, target_image, relative caption)
-        with open(base_path / 'cirr_dataset' / 'cirr' / 'captions' / f'cap.rc2.{split}.json') as f:
+        with open(base_path / 'cirr-dataset' / 'cirr' / 'captions' / f'cap.rc2.{split}.json') as f:
             self.triplets = json.load(f)
 
         # get a mapping from image name to relative path
-        with open(base_path / 'cirr_dataset' / 'cirr' / 'image_splits' / f'split.rc2.{split}.json') as f:
+        with open(base_path / 'cirr-dataset' / 'cirr' / 'image_splits' / f'split.rc2.{split}.json') as f:
             self.name_to_relpath = json.load(f)
 
         print(f"CIRR {split} dataset in {mode} mode initialized")
@@ -241,10 +241,10 @@ class CIRRDataset(Dataset):
                 rel_caption = self.triplets[index]['caption']
 
                 if self.split == 'train':
-                    reference_image_path = base_path / 'cirr_dataset' / self.name_to_relpath[reference_name]
+                    reference_image_path = base_path / 'cirr-dataset' / self.name_to_relpath[reference_name]
                     reference_image = self.preprocess(PIL.Image.open(reference_image_path))
                     target_hard_name = self.triplets[index]['target_hard']
-                    target_image_path = base_path / 'cirr_dataset' / self.name_to_relpath[target_hard_name]
+                    target_image_path = base_path / 'cirr-dataset' / self.name_to_relpath[target_hard_name]
                     target_image = self.preprocess(PIL.Image.open(target_image_path))
                     return reference_image, target_image, rel_caption
 
@@ -258,7 +258,7 @@ class CIRRDataset(Dataset):
 
             elif self.mode == 'classic':
                 image_name = list(self.name_to_relpath.keys())[index]
-                image_path = base_path / 'cirr_dataset' / self.name_to_relpath[image_name]
+                image_path = base_path / 'cirr-dataset' / self.name_to_relpath[image_name]
                 im = PIL.Image.open(image_path)
                 image = self.preprocess(im)
                 return image_name, image
@@ -512,7 +512,7 @@ class CIRDataset(Dataset):
                     return image_name, image
             elif self.data_name == 'cirr':
                 image_name = list(self.name_to_relpath.keys())[index]
-                image_path = base_path / 'cirr_dataset' / self.name_to_relpath[image_name]
+                image_path = base_path / 'cirr-dataset' / self.name_to_relpath[image_name]
                 image = self.preprocess(PIL.Image.open(image_path))
                 return image_name, image
 
