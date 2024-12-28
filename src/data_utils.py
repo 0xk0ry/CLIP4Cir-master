@@ -7,6 +7,7 @@ import PIL.Image
 import torchvision.transforms.functional as F
 from torch.utils.data import Dataset
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
+import random
 
 base_path = Path(__file__).absolute().parents[1].absolute()
 
@@ -299,7 +300,27 @@ class WikiartDataset(Dataset):
 
     def __len__(self):
         return len(self.dataset)
-    
+
+def generate_randomized_fiq_caption(captions, type=-1):
+    random_num = random.random()
+    if type == 0:
+        random_num = 0.12
+    elif type == 1:
+        random_num = 0.37
+    elif type == 2:
+        random_num = 0.62
+    elif type == 3:
+        random_num = 0.88
+    if random_num < 0.25:
+        caption = f"{captions[0].strip('.?, ')} and {captions[1].strip('.?, ')}"
+    elif 0.25 < random_num < 0.5:
+        caption = f"{captions[1].strip('.?, ')} and {captions[0].strip('.?, ')}"
+    elif 0.5 < random_num < 0.75:
+        caption = f"{captions[0].strip('.?, ')}"
+    else:
+        caption = f"{captions[1].strip('.?, ')}"
+    return caption
+
 class CIRDataset(Dataset):
     def __init__(self, data_name, split, mode, preprocess, data_path='./', dress_types=None, val_ret_train=False,
                  fiq_val_type=0, plus=False, llmcap=False):
