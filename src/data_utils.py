@@ -10,7 +10,7 @@ from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normal
 import random
 
 base_path = Path("/kaggle/input")
-
+PIL.Image.MAX_IMAGE_PIXELS = None
 
 def _convert_image_to_rgb(image):
     return image.convert("RGB")
