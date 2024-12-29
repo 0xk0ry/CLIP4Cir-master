@@ -139,7 +139,7 @@ def main():
             if args.dataset == 'cirr':
                 if args.wo_bank:
                     val_index_features, val_index_names = extract_index_features(classic_val_dataset, model.clip)
-                results = compute_cirr_val_metrics(relative_val_dataset, model.clip, val_index_features,
+                results = compute_cirr_val_metrics(relative_val_dataset, model, val_index_features,
                                                    val_index_names)
                 group_recall_at1, group_recall_at2, group_recall_at3, recall_at1, recall_at5, recall_at10, recall_at50 = results
 
