@@ -192,6 +192,8 @@ def main():
                     nni.report_intermediate_result(
                         {'default': best_score, "average_recall_at10": results_dict['average_recall_at10']})
 
+            if epoch % args.save_every == 0:
+                save_model(f'ep{epoch}_{cur_score:.5f}', epoch, model, training_path)
             if cur_score > best_score:
                 best_score = cur_score
                 print("current best:", best_score)
@@ -237,6 +239,7 @@ if __name__ == '__main__':
     parser.add_argument("--neg_num", type=int, default=-1)
     parser.add_argument("--llmcap", action='store_true')
     parser.add_argument("--wo_bank", action='store_true')
+    parser.add_argument('--save_every', type=int, default=5, help='Save model every N epochs')
 
     args = parser.parse_args()
     if args.data_path == '':
