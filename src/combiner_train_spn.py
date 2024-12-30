@@ -270,8 +270,7 @@ def combiner_training_cirr(projection_dim: int, hidden_dim: int, num_epochs: int
     with open(training_path / "training_hyperparameters.json", 'w+') as file:
         json.dump(training_hyper_params, file, sort_keys=True, indent=4)
 
-    model = CIRPlus(args.clip_model_name, tau=args.tau, transform=args.transform, device=device, plus=args.plus,
-                neg_num=args.neg_num, wo_bank=args.wo_bank)
+    model = CIRPlus(args.clip_model_name, transform=args.transform, device=device)
     
     #! add this
     if kwargs.get("model_path"):
