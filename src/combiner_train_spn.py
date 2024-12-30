@@ -120,7 +120,7 @@ def combiner_training_fiq(train_dress_types: List[str], val_dress_types: List[st
     # Define the optimizer, the loss and the grad scaler
     optimizer = optim.Adam(combiner.parameters(), lr=combiner_lr)
     crossentropy_criterion = nn.CrossEntropyLoss()
-    scaler = torch.amp.GradScaler('cuda')
+    scaler = torch.cuda.amp.GradScaler()
 
     # When save_best == True initialize the best result to zero
     if save_best:
