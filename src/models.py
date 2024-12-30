@@ -16,7 +16,6 @@ from data_utils import targetpad_transform, CIRDataset
 from utils import collate_fn, element_wise_sum, device
 from combiner import Combiner
 
-
 class CIRPlus(nn.Module):
     def __init__(self, clip_model_name, tau=0.01,
                  transform="targetpad", target_ratio=1.25,
@@ -66,8 +65,9 @@ class CIRPlus(nn.Module):
             self.combining_function = element_wise_sum
         elif combining_function == 'combiner':
             combiner = Combiner(self.output_dim, projection_dim, hidden_dim).to(device)
-            saved_state_dict = torch.load(combiner_path, map_location=device)
-            combiner.load_state_dict(saved_state_dict["Combiner"])
+            if combiner_path:
+                saved_state_dict = torch.load(combiner_path, map_location=device)
+                combiner.load_state_dict(saved_state_dict["Combiner"])
             combiner.eval()
             self.combining_function = combiner.combine_features
 

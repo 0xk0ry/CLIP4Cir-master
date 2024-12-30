@@ -13,7 +13,7 @@ from torch import optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from data_utils import CIRDataset
-from validate import compute_cirr_val_metrics, compute_fiq_val_metrics
+from validate_spn import compute_cirr_val_metrics, compute_fiq_val_metrics
 from utils import collate_fn, extract_index_features, save_model, RunningAverage
 from statistics import mean, geometric_mean, harmonic_mean
 from collections import OrderedDict
@@ -207,12 +207,12 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--dataset", type=str, required=True, choices=['fiq', 'cirr'],
                         help="should be either 'cirr' or 'fiq'")
-    parser.add_argument("--num-epochs", default=5, type=int, help="number training epochs")
-    parser.add_argument("--clip-model-name", default="RN50x4", type=str,
+    parser.add_argument("--num_epochs", default=5, type=int, help="number training epochs")
+    parser.add_argument("--clip_model_name", default="RN50x4", type=str,
                         help="CLIP model to use, e.g 'RN50', 'RN50x4','ViT-B/16")
     parser.add_argument("--learning-rate", default=2e-5, type=float, help="Learning rate")
     parser.add_argument("--batch-size", default=256, type=int, help="Batch size")
-    parser.add_argument("--validation-frequency", default=1, type=int, help="Validation frequency expressed in epochs")
+    parser.add_argument("--validation_frequency", default=1, type=int, help="Validation frequency expressed in epochs")
     parser.add_argument("--combining_function", type=str, required=True,
                         help="Which combining function use, should be in ['combiner', 'sum']")
     parser.add_argument("--combiner_path", type=Path, default=None, help="path to trained Combiner")

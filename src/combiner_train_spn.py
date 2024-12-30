@@ -20,6 +20,18 @@ from utils import collate_fn, update_train_running_results, set_train_bar_descri
     extract_index_features, generate_randomized_fiq_caption, device
 from validate import compute_cirr_val_metrics, compute_fiq_val_metrics
 
+import numpy as np
+import torch
+from torch import optim
+from torch.utils.data import DataLoader
+from tqdm import tqdm
+from data_utils import CIRDataset
+from validate import compute_cirr_val_metrics, compute_fiq_val_metrics
+from utils import collate_fn, extract_index_features, save_model, RunningAverage
+from statistics import mean, geometric_mean, harmonic_mean
+from collections import OrderedDict
+from models import CIRPlus
+
 
 def combiner_training_fiq(train_dress_types: List[str], val_dress_types: List[str],
                           projection_dim: int, hidden_dim: int, num_epochs: int, clip_model_name: str,
@@ -257,7 +269,17 @@ def combiner_training_cirr(projection_dim: int, hidden_dim: int, num_epochs: int
     with open(training_path / "training_hyperparameters.json", 'w+') as file:
         json.dump(training_hyper_params, file, sort_keys=True, indent=4)
 
-    clip_model, clip_preprocess = clip.load(clip_model_name, device=device, jit=False)
+    model = CIRPlus(args.clip_model_name, tau=args.tau, transform=args.transform, device=device, plus=args.plus,
+                neg_num=args.neg_num, wo_bank=args.wo_bank)
+    
+    #! add this
+    if kwargs.get("model_path"):
+        print('Trying to load the fine-tuned CLIP model')
+        model.load_ckpt(kwargs["model_path"], True)
+        print('CLIP model loaded successfully')
+    
+        
+    clip_model, clip_preprocess = model.clip, model.preprocess
 
     clip_model.eval()
     input_dim = clip_model.visual.input_resolution
@@ -276,12 +298,6 @@ def combiner_training_cirr(projection_dim: int, hidden_dim: int, num_epochs: int
     else:
         raise ValueError("Preprocess transform should be in ['clip', 'squarepad', 'targetpad']")
 
-    if kwargs.get("clip_model_path"):
-        print('Trying to load the fine-tuned CLIP model')
-        clip_model_path = kwargs["clip_model_path"]
-        state_dict = torch.load(clip_model_path, map_location=device)
-        clip_model.load_state_dict(state_dict["CLIP"])
-        print('CLIP model loaded successfully')
 
     clip_model = clip_model.float()
 
