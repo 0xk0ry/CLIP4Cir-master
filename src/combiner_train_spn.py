@@ -315,7 +315,7 @@ def combiner_training_cirr(projection_dim: int, hidden_dim: int, num_epochs: int
     # Define the optimizer, the loss and the grad scaler
     optimizer = optim.Adam(combiner.parameters(), lr=combiner_lr)
     crossentropy_criterion = nn.CrossEntropyLoss()
-    scaler = torch.amp.GradScaler('cuda')
+    scaler = torch.cuda.amp.GradScaler()
 
     # When save_best == True initialize the best results to zero
     if save_best:
