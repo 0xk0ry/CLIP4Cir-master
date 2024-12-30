@@ -431,7 +431,7 @@ def combiner_training_cirr(projection_dim: int, hidden_dim: int, num_epochs: int
                     if save_best and results_dict['geometric_mean'] > best_geometric:
                         best_geometric = results_dict['geometric_mean']
                         save_model('combiner_geometric', epoch, combiner, training_path)
-                    if not save_best:
+                    if (epoch + 1) % kwargs['save_every'] == 0:
                         save_model(f'combiner_{epoch}', epoch, combiner, training_path)
 
 
@@ -446,6 +446,7 @@ if __name__ == '__main__':
     parser.add_argument("--num-epochs", default=300, type=int, help="number training epochs")
     parser.add_argument("--clip-model-name", default="RN50x4", type=str, help="CLIP model to use, e.g 'RN50', 'RN50x4'")
     parser.add_argument("--clip-model-path", type=str, help="Path to the fine-tuned CLIP model")
+    parser.add_argument("--model_path", type=str, help="Path to the fine-tuned CIRPlus model")
     parser.add_argument("--combiner-lr", default=2e-5, type=float, help="Combiner learning rate")
     parser.add_argument("--batch-size", default=1024, type=int, help="Batch size of the Combiner training")
     parser.add_argument("--clip-bs", default=32, type=int, help="Batch size during CLIP feature extraction")
@@ -457,6 +458,7 @@ if __name__ == '__main__':
                         help="Whether save the training model")
     parser.add_argument("--save-best", dest="save_best", action='store_true',
                         help="Save only the best model during training")
+    parser.add_argument('--save_every', type=int, default=5, help='Save the model every N epochs')
 
     args = parser.parse_args()
     if args.dataset.lower() not in ['fashioniq', 'cirr']:
@@ -476,6 +478,7 @@ if __name__ == '__main__':
         "target_ratio": args.target_ratio,
         "save_training": args.save_training,
         "save_best": args.save_best,
+        "save_every": args.save_every
     }
 
     if args.api_key and args.workspace:
