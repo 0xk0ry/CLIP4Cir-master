@@ -32,7 +32,7 @@ from statistics import mean, geometric_mean, harmonic_mean
 from collections import OrderedDict
 from models import CIRPlus
 
-base_path = path("/kaggle/working/CLIP4Cir-with-SPN")
+base_path = Path("/kaggle/working/CLIP4Cir-with-SPN")
 
 def combiner_training_fiq(train_dress_types: List[str], val_dress_types: List[str],
                           projection_dim: int, hidden_dim: int, num_epochs: int, clip_model_name: str,
