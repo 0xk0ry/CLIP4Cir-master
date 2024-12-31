@@ -274,10 +274,13 @@ def combiner_training_cirr(projection_dim: int, hidden_dim: int, num_epochs: int
     
     #! add this
     if kwargs.get("model_path"):
-        print('Trying to load the fine-tuned CLIP model')
-        model.load_ckpt(kwargs["model_path"], True)
-        print('CLIP model loaded successfully')
-    
+        try:
+            print('Trying to load the fine-tuned CLIP model')
+            model.load_ckpt(kwargs["model_path"], True)
+            print('CLIP model loaded successfully')
+            print('Trying to load the Combiner model')
+        except:
+            raise Exception('Fine-tuned CLIP model load failed')
         
     clip_model, clip_preprocess = model.clip, model.preprocess
 
@@ -308,8 +311,16 @@ def combiner_training_cirr(projection_dim: int, hidden_dim: int, num_epochs: int
 
     # Define the combiner and the train dataset
     combiner = Combiner(feature_dim, projection_dim, hidden_dim).to(device, non_blocking=True)
+    if kwargs['combiner_path']:
+        try:
+            print('Trying to load the Combiner model')
+            saved_state_dict = torch.load(kwargs['combiner_path'], map_location=device)
+            combiner.load_state_dict(saved_state_dict["Combiner"])
+            print('Combiner model load succesfully')
+        except:
+            raise Exception('Combiner load failed')
     relative_train_dataset = CIRRDataset('train', 'relative', preprocess)
-    relative_train_loader = DataLoader(dataset=relative_train_dataset, batch_size=batch_size, num_workers=8,
+    relative_train_loader = DataLoader(dataset=relative_train_dataset, batch_size=batch_size, num_workers=4,
                                        pin_memory=True, collate_fn=collate_fn, drop_last=True, shuffle=True)
 
     # Define the optimizer, the loss and the grad scaler
@@ -447,6 +458,7 @@ if __name__ == '__main__':
     parser.add_argument("--clip-model-name", default="RN50x4", type=str, help="CLIP model to use, e.g 'RN50', 'RN50x4'")
     parser.add_argument("--clip-model-path", type=str, help="Path to the fine-tuned CLIP model")
     parser.add_argument("--model_path", type=str, help="Path to the fine-tuned CIRPlus model")
+    parser.add_argument("--combiner_path", type=str, help="Path to the Combiner model")
     parser.add_argument("--combiner-lr", default=2e-5, type=float, help="Combiner learning rate")
     parser.add_argument("--batch-size", default=1024, type=int, help="Batch size of the Combiner training")
     parser.add_argument("--clip-bs", default=32, type=int, help="Batch size during CLIP feature extraction")
@@ -470,6 +482,8 @@ if __name__ == '__main__':
         "num_epochs": args.num_epochs,
         "clip_model_name": args.clip_model_name,
         "clip_model_path": args.clip_model_path,
+        "model_path": args.model_path,
+        "combiner_path": args.combiner_path,
         "combiner_lr": args.combiner_lr,
         "batch_size": args.batch_size,
         "clip_bs": args.clip_bs,
