@@ -276,7 +276,7 @@ def combiner_training_cirr(projection_dim: int, hidden_dim: int, num_epochs: int
     if kwargs.get("model_path"):
         try:
             print('Trying to load the fine-tuned CLIP model')
-            model.load_ckpt(kwargs["model_path"], True)
+            model.load_ckpt(kwargs["model_path"], False)
             print('CLIP model loaded successfully')
             print('Trying to load the Combiner model')
         except:
